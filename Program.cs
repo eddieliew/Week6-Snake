@@ -20,6 +20,8 @@ namespace Snake
             this.col = col;
         }
     }
+
+
     class Program
     {
         // When snake eat food score will updated - Brandon
@@ -56,20 +58,21 @@ namespace Snake
             player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\snake.wav";
             player.PlayLooping();
         }
+
         // draw the food function
         public static void DrawFood()
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("@");
         }
+
         // draw the obstacles 
         public static void DrawObs()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("=");
         }
-       
-       
+
         // draw the snake body 
         public void SnakeBody()
         {
@@ -78,16 +81,14 @@ namespace Snake
         }
 
         // the direction of the snake in an array
-
         public void Dir(Position[] directions)
         {
-
             directions[0] = new Position(0, 1);
             directions[1] = new Position(0, -1);
             directions[2] = new Position(1, 0);
             directions[3] = new Position(-1, 0);
-
         }
+
         // generate the obstacle 
         public void RandomObstacles(List<Position> obstacles)
         {
@@ -97,20 +98,19 @@ namespace Snake
             obstacles.Add(new Position(rand.Next(0, Console.WindowHeight), rand.Next(0, Console.WindowWidth)));
             obstacles.Add(new Position(rand.Next(0, Console.WindowHeight), rand.Next(0, Console.WindowWidth)));
             obstacles.Add(new Position(rand.Next(0, Console.WindowHeight), rand.Next(0, Console.WindowWidth)));
-        
 
-            foreach (Position obstacle in obstacles) {
+            foreach (Position obstacle in obstacles)
+            {
 
                 Console.SetCursorPosition(obstacle.col, obstacle.row);
                 DrawObs();
-                
             }
-}
+        }
+
         // indicate the user input 
         public void UserInput(ref int direction, byte right, byte left, byte down, byte up)
         {
 
-            
             if (Console.KeyAvailable)
             {
                 ConsoleKeyInfo userInput = Console.ReadKey();
@@ -132,19 +132,21 @@ namespace Snake
                 }
             }
         }
+
         public void GenFood(ref Position food, Queue<Position> snakeElements, List<Position> obstacles)
         {
             Random randomNumbersGenerator = new Random();
             do
             {
-                food = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight), 
-                    randomNumbersGenerator.Next(0, Console.WindowWidth)); 
+                food = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight),
+                    randomNumbersGenerator.Next(0, Console.WindowWidth));
             }
-            
+
             while (snakeElements.Contains(food) || obstacles.Contains(food));
             Console.SetCursorPosition(food.col, food.row);
             DrawFood();
         }
+
         public void NewObstacle(ref Position food, Queue<Position> snakeElements, List<Position> obstacles)
         {
             Random randomNumbersGenerator = new Random();
@@ -155,16 +157,46 @@ namespace Snake
                 obstacle = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight),
                     randomNumbersGenerator.Next(0, Console.WindowWidth));
             }
-            
+
             while (snakeElements.Contains(obstacle) || obstacles.Contains(obstacle) || (food.row == obstacle.row && food.col == obstacle.col));
             obstacles.Add(obstacle);
             Console.SetCursorPosition(obstacle.col, obstacle.row);
             DrawObs();
         }
+
+        // Top center score
+        public void ScoreText(string scoretxt, int x)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            int setheight = Console.WindowTop;
+            int setwidth = ((Console.WindowWidth - scoretxt.Length) / 2);
+            Console.SetCursorPosition(setwidth, setheight);
+            Console.WriteLine(scoretxt);
+        }
+
+        // Game over text at center of screen
+        public void GameOverText(string text, int x)
+        {
+            int setheight = ((Console.WindowHeight / 2) - x);
+            int setwidth = ((Console.WindowWidth - text.Length) / 2);
+            Console.SetCursorPosition(setwidth, setheight);
+            Console.WriteLine(text);
+        }
+
+        // only exit when enter
+        public void EnterExit(string exittxt, int x)
+        {
+            int setheight = ((Console.WindowHeight / 2) + 2);
+            int setwidth = ((Console.WindowWidth - exittxt.Length) / 2);
+            Console.SetCursorPosition(setwidth, setheight);
+            while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
+            System.Environment.Exit(0);
+        }
+
         // Main
         static void Main(string[] args)
         {
-          
+
             byte right = 0;
             byte left = 1;
             byte down = 2;
@@ -183,28 +215,21 @@ namespace Snake
             List<Position> obstacles = new List<Position>();
             snake.RandomObstacles(obstacles);
 
-
-
             double sleepTime = 100;
             int direction = right;
             Random randomNumbersGenerator = new Random();
             Console.BufferHeight = Console.WindowHeight;
             lastFoodTime = Environment.TickCount;
-            
-            // Set Score to the top right
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            string scoretxt = "Score: 0";
-            int setscoreheight = (Console.WindowTop);
-            int setscorewidth = ((Console.WindowWidth / 2) - 5);
-            Console.SetCursorPosition(setscorewidth, setscoreheight);
-            Console.Write(scoretxt);
 
-         
+            // Set Score to the top right
+            string scoretxt = "Score: 0";
+            snake.ScoreText(scoretxt, -5);
+
 
             Queue<Position> snakeElements = new Queue<Position>();
-            for (int i = 0; i <= 3; i++) {
+            for (int i = 0; i <= 3; i++)
+            {
                 snakeElements.Enqueue(new Position(0, i));
-                
             }
 
             Position food = new Position();
@@ -236,44 +261,31 @@ namespace Snake
 
                 if (snakeElements.Contains(snakeNewHead) || obstacles.Contains(snakeNewHead))
                 {
-                    //--------------------Game over text----------------
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    //------------first line--------------
-                    string gameovertxt = "Gameover!";
-                    int setheight1 = (Console.WindowHeight / 2) - 1;
-                    int setwidth1 = ((Console.WindowWidth - gameovertxt.Length) / 2);
-                    Console.SetCursorPosition(setwidth1, setheight1);
-                    Console.WriteLine(gameovertxt);
+                    //----------Play Game Over Music------------
                     GameOverMusic();
 
-                    
+                    //--------------------Game over text in red color----------------
+                    Console.ForegroundColor = ConsoleColor.Red;
+
+                    //------------first line--------------
+                    string gameovertxt = "Gameover!";
+                    snake.GameOverText(gameovertxt, 1);
 
                     int userPoints = (snakeElements.Count - 6) * 100 - negativePoints;
                     //if (userPoints < 0) userPoints = 0;
                     userPoints = Math.Max(userPoints, 0);
 
                     //------------second line--------------
-                    string pointtxt = "Your points are: {0}";
-                    int setheight2 = (Console.WindowHeight / 2);
-                    int setwidth2 = ((Console.WindowWidth - pointtxt.Length) / 2);
-                    Console.SetCursorPosition(setwidth2, setheight2);
-                    Console.WriteLine(pointtxt, score);
-
+                    string pointtxt = "Your points are: " + score;
+                    snake.GameOverText(pointtxt, 0);
 
                     //------------third line--------------
                     string exittxt = "Press Enter to Exit";
-                    int setheight3 = (Console.WindowHeight / 2) + 1;
-                    int setwidth3 = ((Console.WindowWidth - exittxt.Length) / 2);
-                    Console.SetCursorPosition(setwidth3, setheight3);
-                    Console.WriteLine(exittxt);
+                    snake.GameOverText(exittxt, -1);
 
                     ////------------exit line--------------
                     string continuetxt = "Press any key to continue . . .";
-                    int setheight4 = (Console.WindowHeight / 2) + 2;
-                    int setwidth4 = ((Console.WindowWidth - continuetxt.Length) / 2);
-                    Console.SetCursorPosition(setwidth4, setheight4);
-                    while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
-                    System.Environment.Exit(0);
+                    snake.EnterExit(continuetxt, -2);
                 }
 
                 Console.SetCursorPosition(snakeHead.col, snakeHead.row);
@@ -308,36 +320,28 @@ namespace Snake
                     // If reach score == winScore(1500), WIN - Brandon
                     if (score == winScore)
                     {
-                        
+                        // won text in green color
                         Console.ForegroundColor = ConsoleColor.Green;
+
                         //------------first line--------------
                         string wintxt = "You Won!";
-                        int setheight1 = (Console.WindowHeight / 2) - 1;
-                        int setwidth1 = ((Console.WindowWidth - wintxt.Length) / 2);
-                        Console.SetCursorPosition(setwidth1, setheight1);
-                        Console.WriteLine(wintxt);
+                        snake.GameOverText(wintxt, 1);
+
                         int userPoints = (snakeElements.Count - 6) * 100 - negativePoints;
                         //if (userPoints < 0) userPoints = 0;
                         userPoints = Math.Max(userPoints, 0);
+
                         //------------second line--------------
-                        string pointtxt = "Your points are: {0}";
-                        int setheight2 = (Console.WindowHeight / 2);
-                        int setwidth2 = ((Console.WindowWidth - pointtxt.Length) / 2);
-                        Console.SetCursorPosition(setwidth2, setheight2);
-                        Console.WriteLine(pointtxt, score);
+                        string pointtxt = "Your points are: " + score;
+                        snake.GameOverText(pointtxt, 0);
+
                         //------------third line--------------
                         string exittxt = "Press Enter to Exit";
-                        int setheight3 = (Console.WindowHeight / 2) + 1;
-                        int setwidth3 = ((Console.WindowWidth - exittxt.Length) / 2);
-                        Console.SetCursorPosition(setwidth3, setheight3);
-                        Console.WriteLine(exittxt);
+                        snake.GameOverText(exittxt, -1);
+
                         ////------------exit line--------------
                         string continuetxt = "Press any key to continue . . .";
-                        int setheight4 = (Console.WindowHeight / 2) + 2;
-                        int setwidth4 = ((Console.WindowWidth - continuetxt.Length) / 2);
-                        Console.SetCursorPosition(setwidth4, setheight4);
-                        while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
-                        System.Environment.Exit(0);
+                        snake.EnterExit(continuetxt, 0);
                     }
 
                     do
