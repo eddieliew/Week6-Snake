@@ -37,14 +37,27 @@ namespace Snake
             Console.SetCursorPosition(setscorewidth, setscoreheight);
             Console.Write(scoretxt);
         }
-        // Main
-        static void Main(string[] args)
+
+        // ------------Add background music and die music Lee Jun Yee-----------------------------------
+        public static void overMusic()
+        {
+            SoundPlayer gameover = new SoundPlayer();
+            gameover.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\die.wav";
+            gameover.PlayLooping();
+        }
+
+        public static void backMusic()
         {
             SoundPlayer player = new SoundPlayer();
             player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\snake.wav";
-            player.PlayLooping();
-            SoundPlayer gameover = new SoundPlayer();
-            gameover.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\die.wav";
+            player.Play();
+        }
+        //----------------- END---------------------------------------
+
+        // Main
+        static void Main(string[] args)
+        {
+            backMusic();
             byte right = 0;
             byte left = 1;
             byte down = 2;
@@ -158,7 +171,7 @@ namespace Snake
                     int setwidth1 = ((Console.WindowWidth - gameovertxt.Length) / 2);
                     Console.SetCursorPosition(setwidth1, setheight1);
                     Console.WriteLine(gameovertxt);
-                    gameover.Play();
+                    overMusic();
 
                     int userPoints = (snakeElements.Count - 6) * 100 - negativePoints;
                     //if (userPoints < 0) userPoints = 0;
@@ -221,7 +234,6 @@ namespace Snake
                     // If reach score == winScore(1500), WIN - Brandon
                     if (score == winScore)
                     {
-                        player.Stop();
                         Console.ForegroundColor = ConsoleColor.Green;
                         //------------first line--------------
                         string wintxt = "You Won!";
