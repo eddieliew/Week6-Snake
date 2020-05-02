@@ -43,6 +43,17 @@ namespace Snake
             Console.SetCursorPosition(setscorewidth, setscoreheight);
             Console.Write(scoretxt);
         }
+        // Bonus food Score ---------- week 7 bonus food
+        static void UpdateBonusScore()
+        {
+            score = score + 300;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            string scoretxt = "Score: " + score;
+            int setscoreheight = (Console.WindowTop);
+            int setscorewidth = ((Console.WindowWidth / 2) - 5);
+            Console.SetCursorPosition(setscorewidth, setscoreheight);
+            Console.Write(scoretxt);
+        }
 
         // Addbackground music and die music ??
         public static void GameOverMusic()
@@ -64,6 +75,12 @@ namespace Snake
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("@");
+        }
+
+        public static void DrawBonusFood()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write("$");
         }
 
         // draw the obstacles 
@@ -147,6 +164,21 @@ namespace Snake
             DrawFood();
         }
 
+        public void GenBonusFood(ref Position food, Queue<Position> snakeElements, List<Position> obstacles)
+        {
+
+            Random randomNumbersGenerator = new Random();
+            do
+            {
+                food = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight),
+                    randomNumbersGenerator.Next(0, Console.WindowWidth));
+            }
+
+            while (snakeElements.Contains(food) || obstacles.Contains(food));
+            Console.SetCursorPosition(food.col, food.row);
+            DrawBonusFood();
+        }
+
         public void NewObstacle(ref Position food, Queue<Position> snakeElements, List<Position> obstacles)
         {
             Random randomNumbersGenerator = new Random();
@@ -192,7 +224,7 @@ namespace Snake
             while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
             System.Environment.Exit(0);
         }
-
+        //Bonus food here ------ week 7 task JY
         // Main
         static void Main(string[] args)
         {
@@ -203,6 +235,7 @@ namespace Snake
             byte up = 3;
             int lastFoodTime = 0;
             int foodDissapearTime = 15000;
+            int BonusFoodDisappearTime = 10000;
             int negativePoints = 0;
             Position[] directions = new Position[4];
 
@@ -234,6 +267,9 @@ namespace Snake
 
             Position food = new Position();
             snake.GenFood(ref food, snakeElements, obstacles);
+
+            
+            lastFoodTime = Environment.TickCount;
 
             foreach (Position position in snakeElements)
             {
@@ -371,6 +407,7 @@ namespace Snake
                     snake.GenFood(ref food, snakeElements, obstacles);
                     lastFoodTime = Environment.TickCount;
                 }
+             
 
                 Console.SetCursorPosition(food.col, food.row);
                 DrawFood();
