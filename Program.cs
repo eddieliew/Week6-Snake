@@ -26,6 +26,8 @@ namespace Snake
     {
         // When snake eat food score will updated - Brandon
         static int score = 0;
+        // bonus food initialize
+        static int bscore = 0;
         // Score reach to win the game - Brandon
         static int winScore = 10050;
 
@@ -46,7 +48,7 @@ namespace Snake
         // Bonus food Score ---------- week 7 bonus food
         static void UpdateBonusScore()
         {
-            score = score + 300;
+            bscore = bscore + 300;
             Console.ForegroundColor = ConsoleColor.Yellow;
             string scoretxt = "Score: " + score;
             int setscoreheight = (Console.WindowTop);
@@ -163,19 +165,19 @@ namespace Snake
             Console.SetCursorPosition(food.col, food.row);
             DrawFood();
         }
-
-        public void GenBonusFood(ref Position food, Queue<Position> snakeElements, List<Position> obstacles)
+        // generate new bonus food 
+        public void GenBonusFood(ref Position bonusfood, Queue<Position> snakeElements, List<Position> obstacles)
         {
 
             Random randomNumbersGenerator = new Random();
             do
             {
-                food = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight),
+                bonusfood = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight),
                     randomNumbersGenerator.Next(0, Console.WindowWidth));
             }
 
-            while (snakeElements.Contains(food) || obstacles.Contains(food));
-            Console.SetCursorPosition(food.col, food.row);
+            while (snakeElements.Contains(bonusfood) || obstacles.Contains(bonusfood));
+            Console.SetCursorPosition(bonusfood.col, bonusfood.row);
             DrawBonusFood();
         }
 
@@ -202,6 +204,15 @@ namespace Snake
             Console.ForegroundColor = ConsoleColor.Yellow;
             int setheight = Console.WindowTop;
             int setwidth = ((Console.WindowWidth - scoretxt.Length) / 2);
+            Console.SetCursorPosition(setwidth, setheight);
+            Console.WriteLine(scoretxt);
+        }
+        // bonus score text 
+        public void BonusScoreText(string scoretxt, int x)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            int setheight = Console.WindowTop;
+            int setwidth = ((Console.WindowWidth - scoretxt.Length) / 3);
             Console.SetCursorPosition(setwidth, setheight);
             Console.WriteLine(scoretxt);
         }
@@ -235,7 +246,7 @@ namespace Snake
             byte up = 3;
             int lastFoodTime = 0;
             int foodDissapearTime = 15000;
-            int BonusFoodDisappearTime = 10000;
+            int BonusFoodDisappearTime = 15000/3;
             int negativePoints = 0;
             Position[] directions = new Position[4];
 
@@ -268,7 +279,9 @@ namespace Snake
             Position food = new Position();
             snake.GenFood(ref food, snakeElements, obstacles);
 
-            
+            Position bonusfood = new Position();
+            snake.GenBonusFood(ref bonusfood, snakeElements, obstacles);
+
             lastFoodTime = Environment.TickCount;
 
             foreach (Position position in snakeElements)
@@ -315,10 +328,13 @@ namespace Snake
                     string pointtxt = "Your points are: " + score;
                     snake.GameOverText(pointtxt, 0);
 
-                    //------------third line--------------
+                    //-------------Third Line--------------------
+
+                    //------------fourth line--------------
                     string exittxt = "Press Enter to Exit";
                     snake.GameOverText(exittxt, -1);
-
+                    string poinbonustxtttxt = "Your bonus point are: " + score;
+                    snake.GameOverText(pointtxt, 0);
                     ////------------exit line--------------
                     string continuetxt = "Press any key to continue . . .";
                     snake.EnterExit(continuetxt, -2);
@@ -348,8 +364,10 @@ namespace Snake
                     lastFoodTime = Environment.TickCount;
                     Console.SetCursorPosition(food.col, food.row);
                     DrawFood();
+                    DrawBonusFood();
                     sleepTime--;
                     UpdateScore();
+                    
                     Position obstacle = new Position();
 
                     // If reach score == winScore(1500), WIN - Brandon
@@ -407,7 +425,15 @@ namespace Snake
                     snake.GenFood(ref food, snakeElements, obstacles);
                     lastFoodTime = Environment.TickCount;
                 }
-             
+                // bomus food disapear 
+                else if (Environment.TickCount - lastFoodTime >= BonusFoodDisappearTime)
+                {
+                    negativePoints = negativePoints + 50;
+                    Console.SetCursorPosition(bonusfood.col, bonusfood.row); 
+                    Console.Write(" ");
+                    snake.GenBonusFood(ref bonusfood, snakeElements, obstacles);
+                    lastFoodTime = Environment.TickCount; 
+                }
 
                 Console.SetCursorPosition(food.col, food.row);
                 DrawFood();
