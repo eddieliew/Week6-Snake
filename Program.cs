@@ -27,7 +27,7 @@ namespace Snake
         // When snake eat food score will updated - Brandon
         static int score = 0;
         // bonus food initialize
-        static int bscore = 0;
+       
         // Score reach to win the game - Brandon
         static int winScore = 10050;
 
@@ -45,19 +45,9 @@ namespace Snake
             Console.SetCursorPosition(setscorewidth, setscoreheight);
             Console.Write(scoretxt);
         }
-        // Bonus food Score ---------- week 7 bonus food
-        static void UpdateBonusScore()
-        {
-            bscore = bscore + 300;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            string scoretxt = "Score: " + score;
-            int setscoreheight = (Console.WindowTop);
-            int setscorewidth = ((Console.WindowWidth / 2) - 5);
-            Console.SetCursorPosition(setscorewidth, setscoreheight);
-            Console.Write(scoretxt);
-        }
+       
 
-        // Addbackground music and die music ??
+        // Addbackground music and die music 
         public static void GameOverMusic()
         {
             SoundPlayer gameover = new SoundPlayer();
@@ -71,6 +61,7 @@ namespace Snake
             player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\snake.wav";
             player.PlayLooping();
         }
+        //--------------------end-------------------
 
         // draw the food function
         public static void DrawFood()
@@ -204,15 +195,6 @@ namespace Snake
             Console.ForegroundColor = ConsoleColor.Yellow;
             int setheight = Console.WindowTop;
             int setwidth = ((Console.WindowWidth - scoretxt.Length) / 2);
-            Console.SetCursorPosition(setwidth, setheight);
-            Console.WriteLine(scoretxt);
-        }
-        // bonus score text 
-        public void BonusScoreText(string scoretxt, int x)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            int setheight = Console.WindowTop;
-            int setwidth = ((Console.WindowWidth - scoretxt.Length) / 3);
             Console.SetCursorPosition(setwidth, setheight);
             Console.WriteLine(scoretxt);
         }
@@ -357,17 +339,27 @@ namespace Snake
                     // feeding the snake
                     do
                     {
-                        food = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight),
-                            randomNumbersGenerator.Next(0, Console.WindowWidth));
+                        food = new Position(randomNumbersGenerator.Next(0, Console.WindowHeight), randomNumbersGenerator.Next(0, Console.WindowWidth));
+
+
                     }
                     while (snakeElements.Contains(food) || obstacles.Contains(food));
                     lastFoodTime = Environment.TickCount;
+
                     Console.SetCursorPosition(food.col, food.row);
                     DrawFood();
                     DrawBonusFood();
                     sleepTime--;
                     UpdateScore();
-                    
+                }
+                else if (snakeNewHead.col == bonusfood.col && snakeNewHead.row == bonusfood.row)
+                {
+                    score += 150;
+                    UpdateScore();
+                   
+
+
+
                     Position obstacle = new Position();
 
                     // If reach score == winScore(1500), WIN - Brandon
