@@ -354,8 +354,7 @@ namespace Snake
                         (food.row != obstacle.row && food.col != obstacle.row));
                     obstacles.Add(obstacle);
                     Console.SetCursorPosition(obstacle.col, obstacle.row);
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write("=");
+                    DrawObs();
                 }
                 else
                 {
