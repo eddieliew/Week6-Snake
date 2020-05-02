@@ -311,8 +311,7 @@ namespace Snake
                     while (snakeElements.Contains(food) || obstacles.Contains(food));
                     lastFoodTime = Environment.TickCount;
                     Console.SetCursorPosition(food.col, food.row);
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write("@");
+                    DrawFood();
                     sleepTime--;
                     UpdateScore();
                     Position obstacle = new Position();
@@ -374,8 +373,7 @@ namespace Snake
                 }
 
                 Console.SetCursorPosition(food.col, food.row);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("@");
+                DrawFood();
 
                 sleepTime -= 0.01;
 
